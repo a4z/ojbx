@@ -40,12 +40,12 @@ jobs:
       - name: Download obxgenerator
         run: |
           mkdir obxgenerator
-          gh release download v0.14.0 --repo objectbox/objectbox-generator -p ${{ matrix.obxgenerator }} -D ./obxgenerator
+          gh release download v0.14.0 --repo objectbox/objectbox-generator -p ${{ matrix.obxgenerator }}
           ls -R ./
         shell: bash
 
       - name: Extract obxgenerator
-        run: cd obxgenerator && unzip obxgenerator.zip
+        run: unzip ${{ matrix.obxgenerator }}  -d obxgenerator
         shell: bash
 
       - name: Make obxgenerator executable
