@@ -1,6 +1,8 @@
 
 
-find_program(OBJECTBOX_GENERATOR objectbox-generator)
+find_program(OBJECTBOX_GENERATOR objectbox-generator
+  HINTS ${PROJECT_SOURCE_DIR}/obxgenerator} # THIS IS FOR CI
+)
 
 if(NOT OBJECTBOX_GENERATOR)
   message(FATAL_ERROR "objectbox-generator not found")
