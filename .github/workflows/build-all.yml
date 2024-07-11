@@ -41,10 +41,12 @@ jobs:
         run: |
           mkdir obxgenerator
           gh release download v0.14.0 --repo objectbox/objectbox-generator -p ${{ matrix.obxgenerator }} -D ./obxgenerator
+          ls -R ./
         shell: bash
 
       - name: Extract obxgenerator
-        run: unzip obxgenerator.zip -d ./obxgenerator
+        run: cd obxgenerator && unzip obxgenerator.zip
+        shell: bash
 
       - name: Make obxgenerator executable
         if: matrix.os != 'windows-latest'
