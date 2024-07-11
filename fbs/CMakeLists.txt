@@ -1,6 +1,14 @@
 
 
-find_program(OBJECTBOX_GENERATOR objectbox-generator
+
+
+if(WIN32)
+  set(OBJECTBOX_GENERATOR_BIN objectbox-generator.exe)
+else()
+  set(OBJECTBOX_GENERATOR_BIN objectbox-generator)
+endif()
+
+find_program(OBJECTBOX_GENERATOR ${OBJECTBOX_GENERATOR_BIN}
   HINTS ${PROJECT_SOURCE_DIR}/obxgenerator} # THIS IS FOR CI
 )
 
@@ -32,7 +40,7 @@ foreach(fbs_file ${FBS_FILES})
   message("Generating objectbox files for ${name}")
   execute_process(
 #    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_LIST_DIR}/${out}
-    COMMAND objectbox-generator -cpp -out ${CMAKE_CURRENT_LIST_DIR}/generated ${fbs_file}
+    COMMAND ${OBJECTBOX_GENERATOR} -cpp -out ${CMAKE_CURRENT_LIST_DIR}/generated ${fbs_file}
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     COMMAND_ERROR_IS_FATAL LAST
     COMMAND_ECHO STDOUT
