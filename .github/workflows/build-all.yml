@@ -38,7 +38,10 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
       - name: Download obxgenerator
-        run: gh release download v0.14.0 -p ${{ matrix.obxgenerator }} -D ./obxgenerator
+        run: |
+          mkdir obxgenerator
+          gh release download v0.14.0 --repo objectbox/objectbox-generator -p ${{ matrix.obxgenerator }} -D ./obxgenerator
+        shell: bash
 
       - name: Extract obxgenerator
         run: unzip obxgenerator.zip -d ./obxgenerator
