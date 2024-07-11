@@ -1,0 +1,76 @@
+name: CMake Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  VCPKG_COMMIT_ID: 'ad25766aefb5313b6bc4e2a4b78a2946f84fbf66'
+
+jobs:
+  build_and_test:
+    name: ${{ matrix.os }}-${{ github.workflow }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: windows-latest
+            cmake_preset: msvc22
+          - os: ubuntu-latest
+            cmake_preset: ninja
+          - os: macos-latest
+            cmake_preset: xcode
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies on Ubuntu
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libtool autoconf automake lcov
+
+      - name: Install dependencies on Mac
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install lcov autoconf automake libtool
+
+      - uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: "~3.29.0"
+          ninjaVersion: "^1.12.0"
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        id: runvcpkg
+        with:
+          vcpkgDirectory: '${{ runner.workspace }}/b/vcpkg'
+          vcpkgGitCommitId: '${{ env.VCPKG_COMMIT_ID }}'
+          vcpkgJsonGlob: 'vcpkg.json'
+
+      - name: Configure CMake
+        run: |
+          cmake --version
+          cmake --preset ${{ matrix.cmake_preset }} ${{ matrix.extra_args }}
+
+      - name: Build
+        run: |
+          cmake --build --preset ${{ matrix.cmake_preset }} --verbose
+
+      - name: Test
+        run: |
+          ./build/${{ matrix.cmake_preset }}/Debug/myapp
+
+        # no test yet, todo
+        # run: |
+        #   ctest --preset ${{ matrix.cmake_preset }} --output-on-failure
+
+
+
