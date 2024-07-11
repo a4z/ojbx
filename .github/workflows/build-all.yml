@@ -23,13 +23,32 @@ jobs:
         include:
           - os: windows-latest
             cmake_preset: msvc22
+            obxgenerator: objectbox-generator-Windows.zip
           - os: ubuntu-latest
             cmake_preset: ninja
+            obxgenerator: objectbox-generator-Linux.zip
           - os: macos-latest
             cmake_preset: xcode
+            obxgenerator: objectbox-generator-MacOS.zip
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Login to GitHub CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Download obxgenerator
+        run: gh release download v0.14.0 -p ${{ matrix.obxgenerator }} -D ./obxgenerator
+
+      - name: Extract obxgenerator
+        run: unzip obxgenerator.zip -d ./obxgenerator
+
+      - name: Make obxgenerator executable
+        if: matrix.os != 'windows-latest'
+        run: chmod +x ./obxgenerator/obxgenerator
+
+      - name: Add obxgenerator to PATH
+        run: echo "$PWD/obxgenerator" >> $GITHUB_PATH
 
       - name: Install dependencies on Ubuntu
         if: matrix.os == 'ubuntu-latest'
@@ -58,7 +77,7 @@ jobs:
       - name: Configure CMake
         run: |
           cmake --version
-          cmake --preset ${{ matrix.cmake_preset }} ${{ matrix.extra_args }}
+          cmake --preset ${{ matrix.cmake_preset }}
 
       - name: Build
         run: |
