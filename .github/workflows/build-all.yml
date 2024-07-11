@@ -50,7 +50,7 @@ jobs:
 
       - name: Make obxgenerator executable
         if: matrix.os != 'windows-latest'
-        run: chmod +x ./obxgenerator/obxgenerator
+        run: chmod +x ./obxgenerator/objectbox-generator
 
       - name: Add obxgenerator to PATH
         run: echo "$PWD/obxgenerator" >> $GITHUB_PATH
