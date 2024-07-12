@@ -92,9 +92,15 @@ jobs:
         run: |
           cmake --build --preset ${{ matrix.cmake_preset }} --verbose
 
-      - name: Test
+      - name: Run myapp
+        if: matrix.os != 'windows-latest'
         run: |
           ./build/${{ matrix.cmake_preset }}/Debug/myapp
+
+      - name: Run myapp.exe
+        if: matrix.os == 'windows-latest'
+        run: |
+          ./build/${{ matrix.cmake_preset }}/Debug/myapp.exe
 
         # no test yet, todo
         # run: |
