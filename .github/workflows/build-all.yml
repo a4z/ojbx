@@ -46,7 +46,7 @@ jobs:
 
       - name: Extract obxgenerator *nix
         if: matrix.os != 'windows-latest'
-        run:
+        run: |
           unzip ${{ matrix.obxgenerator }}  -d obxgenerator
           chmod +x ./obxgenerator/objectbox-generator
           echo "$PWD/obxgenerator" >> $GITHUB_PATH
