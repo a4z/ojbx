@@ -44,16 +44,20 @@ jobs:
           ls -R ./
         shell: bash
 
-      - name: Extract obxgenerator
-        run: unzip ${{ matrix.obxgenerator }}  -d obxgenerator
-        shell: bash
-
-      - name: Make obxgenerator executable
+      - name: Extract obxgenerator *nix
         if: matrix.os != 'windows-latest'
-        run: chmod +x ./obxgenerator/objectbox-generator
+        run:
+          unzip ${{ matrix.obxgenerator }}  -d obxgenerator
+          chmod +x ./obxgenerator/objectbox-generator
+          echo "$PWD/obxgenerator" >> $GITHUB_PATH
 
-      - name: Add obxgenerator to PATH
-        run: echo "$PWD/obxgenerator" >> $GITHUB_PATH
+      - name: Extract obxgenerator pwsh
+        if: matrix.os == 'windows-latest'
+        run: |
+            Expand-Archive -LiteralPath ${{ matrix.obxgenerator }} -DestinationPath obxgenerator
+            $path = "${{ env.GITHUB_WORKSPACE }}\obxgenerator"
+            echo "$path" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+
 
       - name: Install dependencies on Ubuntu
         if: matrix.os == 'ubuntu-latest'
